@@ -20,9 +20,13 @@ bool compareByFrequency(const pair<string, int>& a, const pair<string, int>& b) 
 }
 
 int main() {
-    ifstream myInputFile ("input1.txt");
+    string filename;
+    cin >> filename;
+
+    // First pass: Count frequencies
+    ifstream myInputFile(filename);
     if (!myInputFile.is_open()) {
-        cerr << "Error opening file: " << endl;
+        cerr << "Error opening file: " << filename << endl;
         return 1;
     }
 
@@ -77,7 +81,6 @@ int main() {
  //   cout << "___________________________________________________________________________________" << endl;
 
     // Second pass: Print positions
-    string filename = "input1.txt";
     myInputFile.open(filename);
     if (!myInputFile.is_open()) {
         cerr << "Error reopening file: " << filename << endl;
