@@ -63,7 +63,7 @@ int main() {
     // Print sorted tokens with newline after 83 characters
     int charCount = 0;
     for (const auto& pair : sortedTokens) {
-        if (charCount + pair.first.length() + 1 > 83) {
+        if (charCount + pair.first.length() + 1 > 84) {
             cout << endl;
             charCount = 0;
         }
