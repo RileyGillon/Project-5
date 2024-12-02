@@ -20,8 +20,7 @@ bool compareByFrequency(const pair<string, int>& a, const pair<string, int>& b) 
 }
 
 int main() {
-    string filename;
-    cin >> filename;
+    string filename = "testOutput.txt";
 
     // First pass: Count frequencies and store original tokens
     ifstream myInputFile(filename);
