@@ -2,7 +2,8 @@
 #include <fstream>
 #include <string>
 #include <unordered_map>
-#include <vector>
+#include <map>
+#include <iterator>
 #include <algorithm>
 using namespace std;
 
@@ -11,75 +12,48 @@ bool isDelimiter(char c) {
     return c == ' ' || c == '\n';
 }
 
-// Sort tokens by frequency (descending) then alphabetically
-bool compareByFrequency(const pair<string, int>& a, const pair<string, int>& b) {
-    if (a.second != b.second) {
-        return a.second > b.second;
-    }
-    return a.first < b.first;
-}
-
 int main() {
-    string filename = "testOutput.txt";
-
-    // First pass: Count frequencies and store original tokens
-    ifstream myInputFile(filename);
-    if (!myInputFile.is_open()) {
-        cerr << "Error opening file: " << filename << endl;
-        return 1;
-    }
-
     unordered_map<string, int> tokenFreq;
-    vector<string> originalTokens;
+    multimap<int, string> originalOrder;
     string token;
     char aChar;
+    int position = 0;
 
-    // Read file character by character
-    while (myInputFile.get(aChar)) {
+    // Read standard input character by character
+    while (cin.get(aChar)) {
         // Skip delimiters
-        while (!myInputFile.eof() && isDelimiter(aChar)) {
-            if (!myInputFile.get(aChar)) break;
+        while (!cin.eof() && isDelimiter(aChar)) {
+            if (!cin.get(aChar)) break;
         }
-        if (myInputFile.eof()) break;
+        if (cin.eof()) break;
 
         // Build token
         token.clear();
-        while (!myInputFile.eof() && !isDelimiter(aChar)) {
+        while (!cin.eof() && !isDelimiter(aChar)) {
             token += aChar;
-            if (!myInputFile.get(aChar)) break;
+            if (!cin.get(aChar)) break;
         }
         if (!token.empty()) {
             tokenFreq[token]++;
-            originalTokens.push_back(token);
+            originalOrder.insert({position++, token});
         }
     }
-    myInputFile.close();
 
-    // Sort tokens
-    vector<pair<string, int>> sortedTokens(tokenFreq.begin(), tokenFreq.end());
-    sort(sortedTokens.begin(), sortedTokens.end(), compareByFrequency);
+    // Create frequency-based map (automatically sorted by frequency and alphabetically)
+    map<pair<int, string>, string, greater<pair<int, string>>> freqSorted;
+    for (const auto& pair : tokenFreq) {
+        freqSorted[{pair.second, pair.first}] = pair.first;
+    }
 
-    // Print sorted tokens with newline after 83 characters
-    int charCount = 0;
-    for (const auto& pair : sortedTokens) {
-        if (charCount + pair.first.length() + 1 > 84) {
-            cout << endl;
-            charCount = 0;
-        }
-        cout << pair.first << " ";
-        charCount += pair.first.length() + 1;
+    // Print sorted tokens
+    for (const auto& pair : freqSorted) {
+        cout << pair.second << " ";
     }
     cout << endl << "**********" << endl;
 
     // Print original tokens in their original order
-    charCount = 0;
-    for (const auto& originalToken : originalTokens) {
-        if (charCount + originalToken.length() + 1 > 84) {
-            cout << endl;
-            charCount = 0;
-        }
-        cout << originalToken << " ";
-        charCount += originalToken.length() + 1;
+    for (const auto& pair : originalOrder) {
+        cout << pair.second << " ";
     }
     cout << endl;
 
