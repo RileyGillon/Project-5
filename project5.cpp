@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <unordered_map>
 #include <map>
@@ -23,38 +22,29 @@ struct CompareByFrequency {
 };
 
 int main() {
-    string filename = "testOutput.txt";
-
     // First pass: Count frequencies
-    ifstream myInputFile(filename);
-    if (!myInputFile.is_open()) {
-        cerr << "Error opening file: " << filename << endl;
-        return 1;
-    }
-
     unordered_map<string, int> tokenFreq;
     string token;
     char aChar;
 
-    // Read file character by character
-    while (myInputFile.get(aChar)) {
+    // Read from stdin character by character
+    while (cin.get(aChar)) {
         // Skip delimiters
-        while (!myInputFile.eof() && isDelimiter(aChar)) {
-            if (!myInputFile.get(aChar)) break;
+        while (!cin.eof() && isDelimiter(aChar)) {
+            if (!cin.get(aChar)) break;
         }
-        if (myInputFile.eof()) break;
+        if (cin.eof()) break;
 
         // Build token
         token.clear();
-        while (!myInputFile.eof() && !isDelimiter(aChar)) {
+        while (!cin.eof() && !isDelimiter(aChar)) {
             token += aChar;
-            if (!myInputFile.get(aChar)) break;
+            if (!cin.get(aChar)) break;
         }
         if (!token.empty()) {
             tokenFreq[token]++;
         }
     }
-    myInputFile.close();
 
     // Create sorted map based on frequency
     map<pair<string, int>, string, CompareByFrequency> sortedMap;
@@ -75,25 +65,22 @@ int main() {
     }
     cout << endl << "**********" << endl;
 
-    // Second pass: Print positions
-    myInputFile.open(filename);
-    if (!myInputFile.is_open()) {
-        cerr << "Error reopening file: " << filename << endl;
-        return 1;
-    }
+    // Reset cin to beginning of input
+    cin.clear();
+    cin.seekg(0);
 
-    // Read tokens again and print positions
+    // Second pass: Print positions
     bool firstToken = true;
-    while (myInputFile.get(aChar)) {
-        while (!myInputFile.eof() && isDelimiter(aChar)) {
-            if (!myInputFile.get(aChar)) break;
+    while (cin.get(aChar)) {
+        while (!cin.eof() && isDelimiter(aChar)) {
+            if (!cin.get(aChar)) break;
         }
-        if (myInputFile.eof()) break;
+        if (cin.eof()) break;
 
         token.clear();
-        while (!myInputFile.eof() && !isDelimiter(aChar)) {
+        while (!cin.eof() && !isDelimiter(aChar)) {
             token += aChar;
-            if (!myInputFile.get(aChar)) break;
+            if (!cin.get(aChar)) break;
         }
         if (!token.empty()) {
             if (!firstToken) {
