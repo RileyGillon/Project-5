@@ -45,11 +45,6 @@ int main() {
         freqSorted[{pair.second, pair.first}] = pair.first;
     }
 
-    // Print sorted tokens
-    for (const auto& pair : freqSorted) {
-        cout << pair.second << " ";
-    }
-    cout << endl << "**********" << endl;
 
     // Print original tokens in their original order
     for (const auto& pair : originalOrder) {
