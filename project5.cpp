@@ -12,20 +12,12 @@ bool isDelimiter(char c) {
     return c == ' ' || c == '\n';
 }
 
-// Sort tokens by frequency (descending) then alphabetically
-bool compareByFrequency(const pair<string, int>& a, const pair<string, int>& b) {
-    if (a.second != b.second) {
-        return a.second > b.second;
-    }
-    return a.first < b.first;
-}
-
 int main() {
-    unordered_map<string, int> tokenFreq;
+    unordered_map<string, int> tokenFreq;  // Store token frequencies
     string token;
     char aChar;
 
-    // Read from standard input character by character
+    // First pass: Count frequencies
     while (cin.get(aChar)) {
         // Skip delimiters
         while (!cin.eof() && isDelimiter(aChar)) {
@@ -33,7 +25,7 @@ int main() {
         }
         if (cin.eof()) break;
 
-        // Build token
+        // Build token (including punctuation)
         token.clear();
         while (!cin.eof() && !isDelimiter(aChar)) {
             token += aChar;
@@ -44,17 +36,10 @@ int main() {
         }
     }
 
-    // Sort tokens using multimap
-    multimap<int, string, greater<int>> sortedTokens;
+    // Sort tokens by frequency (descending) and then alphabetically
+    multimap<pair<int, string>, string, greater<pair<int, string>>> sortedTokens;
     for (const auto& pair : tokenFreq) {
-        sortedTokens.insert({pair.second, pair.first});
-    }
-
-    // Create position mapping with unordered_map
-    unordered_map<string, int> tokenToPosition;
-    int position = 1;
-    for (const auto& pair : sortedTokens) {
-        tokenToPosition[pair.second] = position++;
+        sortedTokens.insert({{pair.second, pair.first}, pair.first});
     }
 
     // Print sorted tokens
@@ -63,12 +48,18 @@ int main() {
     }
     cout << endl << "**********" << endl;
 
-    // Use cin.clear() and cin.seekg() to reset input stream
+    // Create position mapping
+    unordered_map<string, int> tokenToPosition;
+    int position = 1;
+    for (const auto& pair : sortedTokens) {
+        tokenToPosition[pair.second] = position++;
+    }
+
+    // Reset input stream
     cin.clear();
     cin.seekg(0);
 
     // Second pass: Print positions
-    bool firstToken = true;
     while (cin.get(aChar)) {
         while (!cin.eof() && isDelimiter(aChar)) {
             if (!cin.get(aChar)) break;
@@ -82,7 +73,6 @@ int main() {
         }
         if (!token.empty()) {
             cout << tokenToPosition[token] << " ";
-            firstToken = false;
         }
     }
     cout << endl;
