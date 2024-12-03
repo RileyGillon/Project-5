@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -20,38 +19,31 @@ bool compareByFrequency(const pair<string, int>& a, const pair<string, int>& b) 
 }
 
 int main() {
-    string filename = "testOutput.txt";
-
     // First pass: Count frequencies
-    ifstream myInputFile(filename);
-    if (!myInputFile.is_open()) {
-        cerr << "Error opening file: " << filename << endl;
-        return 1;
-    }
-
     unordered_map<string, int> tokenFreq;
+    vector<string> originalTokens;  // Store original tokens for second pass
     string token;
     char aChar;
 
-    // Read file character by character
-    while (myInputFile.get(aChar)) {
+    // Read from standard input character by character
+    while (cin.get(aChar)) {
         // Skip delimiters
-        while (!myInputFile.eof() && isDelimiter(aChar)) {
-            if (!myInputFile.get(aChar)) break;
+        while (cin && isDelimiter(aChar)) {
+            if (!cin.get(aChar)) break;
         }
-        if (myInputFile.eof()) break;
+        if (!cin) break;
 
         // Build token
         token.clear();
-        while (!myInputFile.eof() && !isDelimiter(aChar)) {
+        while (cin && !isDelimiter(aChar)) {
             token += aChar;
-            if (!myInputFile.get(aChar)) break;
+            if (!cin.get(aChar)) break;
         }
         if (!token.empty()) {
             tokenFreq[token]++;
+            originalTokens.push_back(token);  // Store token for second pass
         }
     }
-    myInputFile.close();
 
     // Sort tokens
     vector<pair<string, int>> sortedTokens(tokenFreq.begin(), tokenFreq.end());
@@ -62,8 +54,6 @@ int main() {
     for (size_t i = 0; i < sortedTokens.size(); i++) {
         tokenToPosition[sortedTokens[i].first] = i + 1;
     }
-
-//    cout << "___________________________________________________________________________________" << endl;
 
     // Print sorted tokens with newline after 80 characters
     int charCount = 0;
@@ -77,42 +67,21 @@ int main() {
     }
     cout << endl << "**********" << endl;
 
- //   cout << "___________________________________________________________________________________" << endl;
-
-    // Second pass: Print positions
-    myInputFile.open(filename);
-    if (!myInputFile.is_open()) {
-        cerr << "Error reopening file: " << filename << endl;
-        return 1;
-    }
-
-    // Read tokens again and print positions with newline after 80 characters
-    bool firstToken = true;
+    // Second pass: Print positions using stored tokens
     charCount = 0;
-    while (myInputFile.get(aChar)) {
-        while (!myInputFile.eof() && isDelimiter(aChar)) {
-            if (!myInputFile.get(aChar)) break;
-        }
-        if (myInputFile.eof()) break;
+    bool firstToken = true;
 
-        token.clear();
-        while (!myInputFile.eof() && !isDelimiter(aChar)) {
-            token += aChar;
-            if (!myInputFile.get(aChar)) break;
-        }
-        if (!token.empty()) {
-            if (!firstToken) {
-                if (charCount + to_string(tokenToPosition[token]).length() + 1 > 85) {
-                    cout << endl;
-                    charCount = 0;
-                }
-                //cout << " ";
-                charCount++;
+    for (const string& storedToken : originalTokens) {
+        if (!firstToken) {
+            if (charCount + to_string(tokenToPosition[storedToken]).length() + 1 > 84) {
+                cout << endl;
+                charCount = 0;
             }
-            cout << tokenToPosition[token] << " ";
-            charCount += to_string(tokenToPosition[token]).length();
-            firstToken = false;
+            charCount++;
         }
+        cout << tokenToPosition[storedToken] << " ";
+        charCount += to_string(tokenToPosition[storedToken]).length();
+        firstToken = false;
     }
     cout << endl;
 
